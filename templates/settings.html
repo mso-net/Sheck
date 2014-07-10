@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% set active_page_title = "Settings" %}
+{% set active_page = "settings" %}
+
+{% block body %}
+	<div class="col-xs-12">
+		<form role="form" method="POST" enctype="multipart/form-data">
+			<div class="form-group">
+				<label for="current_password">Current Password</label>
+				<input type="password" class="form-control" name="current_password" id="current_password" placeholder="">
+			</div>
+			<div class="form-group">
+				<label for="new_password">New Password</label>
+				<input type="password" class="form-control" name="new_password" id="new_password" placeholder="">
+			</div>
+			<div class="form-group">
+				<label for="confirm_new_password">Confirm New Password</label>
+				<input type="password" class="form-control" name="confirm_new_password" id="confirm_new_password" placeholder="">
+			</div>
+			{% if current_user.has_ability("UPDATE_MANAGEMENT") %}
+				<h3>Management Key</h3>
+				<div class="form-group">
+					<label for="key">Management Key</label>
+					<input type="file" id="key" name="key">
+				</div>
+				<div class="form-group">
+					<label for="key_passphrase">Passphrase</label>
+					<input type="password" class="form-control" id="key_passphrase" name="key_passphrase">
+				</div>
+				<div class="form-group">
+					<label for="store_passphrase">
+						<input type="checkbox" id="store_passphrase" name="store_passphrase"{% if get_config("store_passphrase") %} checked="checked"{% endif %}>
+						Store Passphrase<br/>
+						<small>
+							This will store the Passphrase of your above Management Key, and enable features such as Scheduled ORCs
+						</small>
+					</label>
+				</div>
+			{% endif %}
+			{% if get_config("use_otp") %}
+				<div class="form-group">
+					<label for="otp">One Time Pass</label>
+					<input type="password" class="form-control" name="otp" id="otp" placeholder="">
+				</div>
+			{% endif %}
+			<button type="submit" class="btn btn-default">Submit</button>
+		</form>
+	</div>
+{% endblock %}

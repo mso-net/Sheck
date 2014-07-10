@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% set active_page = "dashboard" %}
+
+{% block body %}
+	<div class="col-xs-3">
+		<h2>Info</h2>
+		<span class="label label-primary">{{total_keys}} keys</span><br/>
+		<span class="label label-primary">{{servers}} servers</span><br/>
+		<span class="label label-primary">{{users}} {% if users!=1 %}users{% else %}user{% endif %}</span><br/>
+		<span class="label label-primary">{{people}} {% if people!=1 %}people{% else %}person{% endif %}</span><br/>
+		{% if (unassigned_keys > 0) %}
+			<span class="label label-warning">{{unassigned_keys}} unassigned keys</span>
+		{% endif %}
+	</div>
+	<div class="col-xs-9">
+		<h2>Log</h2>
+		<div style="display:table; width:100%; background:#efefef;">
+			<div style="height:260px; display:table-cell; vertical-align:bottom;">
+				<div style="max-height:519px; overflow-y:auto; overflow-x:hidden;" id="log-container">
+					{% for entry in log_entries %}
+						<h5>&nbsp;<abbr class="timeago" style="color:#8d8d8d" title="{{entry.time}}"></abbr> {{entry.data}}</h5>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

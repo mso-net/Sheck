@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% set active_page_title = "Servers » Request Access" %}
+{% set active_page = "servers" %}
+
+{% block body %}
+	{{ render_form(form, action_url="/server/%s/request"%server_id, action_text='Submit Form') }}
+{% endblock %}

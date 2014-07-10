@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% set active_page_title = "People" %}
+{% set active_page = "people" %}
+
+{% block subnav %}
+	<div class="col-xs-12">
+		{% if current_user.has_ability("ADD_PERSON") %}
+			<a href="/person/add" class="btn btn-default pull-right"><i class="fa fa-plus-circle fa-lg"></i> Add person</a>
+		{% endif %}
+	</div>
+{% endblock %}
+
+{% block body %}
+	<div class="col-xs-12">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Alias</th>
+					<th>Email Address</th>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for person in people %}
+					<tr>
+						<td>{{person.alias}}</td>
+						<td>{{person.email}}</td>
+						<td>
+							<div class="text-right">
+								{% if current_user.has_ability("ASSIGN_ACCESS_TO_PERSON") %}
+									<a class="btn btn-default" href="/person/{{person.id}}/access" role="button"><i class="fa fa-desktop"></i> Access</a>
+								{% endif %}
+								{% if current_user.has_ability("ASSIGN_KEY_TO_PERSON") %}
+									<a class="btn btn-default" href="/person/{{person.id}}/keys" role="button"><i class="fa fa-lock"></i> Keys</a>
+								{% endif %}
+								{% if current_user.has_ability("DELETE_PERSON") %}
+									<a class="btn btn-default" href="/person/{{person.id}}/delete" role="button"><i class="fa fa-trash-o"></i> Delete</a>
+								{% endif %}
+								{% if current_user.has_ability(["EDIT_PERSON","EDIT_PERSON_ABILITIES"]) %}
+									<a class="btn btn-default" href="/person/{{person.id}}/edit" role="button"><i class="fa fa-pencil"></i> Edit</a>
+								{% endif %}
+							</div>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}

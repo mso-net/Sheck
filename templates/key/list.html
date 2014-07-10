@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% set active_page_title = "Keys" %}
+{% set active_page = "keys" %}
+
+{% block subnav %}
+	<div class="col-xs-12">
+		<a href="/key/add" class="btn btn-default pull-right"><i class="fa fa-plus-circle fa-lg"></i> Add key</a>
+	</div>
+{% endblock %}
+
+{% block body %}
+	<div class="col-xs-12">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Comment</th>
+					<th>Fingerprint</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for key in keys %}
+					<tr>
+						<td>{{key.comment}}</td>
+						<td>{{key.fingerprint}}</td>
+						<td>{% if key.count == 0 %}<span class="label label-warning">Unassigned!</span>{% endif %}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}

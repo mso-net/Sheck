@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% set active_page_title = "Servers » Users" %}
+{% set active_page = "servers"	 %}
+
+{% block subnav %}
+	<div class="col-xs-12">
+		{% if current_user.has_ability("ADD_USER") %}
+			<a href="user/add" class="btn btn-default pull-right"><i class="fa fa-plus-circle fa-lg"></i> Add user</a>
+		{% endif %}
+	</div>
+{% endblock %}
+
+{% block body %}
+	<div class="col-xs-12">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Username</th>
+					<th>Password</th>
+					<th>Auth File Location</th>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for user in users %}
+					<tr>
+						<td>{{user.user}}</td>
+						<td>{{user.password}}</td>
+						<td>{{user.auth_file_location}}</td>
+						<td>
+							<div class="text-right">
+								{% if current_user.has_ability("DELETE_USER") %}
+									<a class="btn btn-default" href="user/{{user.id}}/delete" role="button"><i class="fa fa-trash-o"></i> Delete</a>
+								{% endif %}
+								{% if current_user.has_ability("EDIT_USER") %}
+									<a class="btn btn-default" href="user/{{user.id}}/edit" role="button"><i class="fa fa-pencil"></i> Edit</a>
+								{% endif %}
+							</div>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% if orc is defined %}
+	{% set active_page_title = "ORC » Edit" %}
+{% else %}
+	{% set active_page_title = "ORC » Add" %}
+{% endif %}
+{% set active_page = "orc" %}
+
+{% block body %}
+	{{ render_form(
+		form,
+		action_url="/orc/add" if not orc_id is defined else "/orc/%s/edit"%orc_id,
+		action_text='Submit Form',
+		disabled_fields=["hours","minutes","seconds"] if ((not orc_id is defined) or (not form.schedule.data)),
+		removed_fields=["schedule","hours","minutes","seconds"] if not (get_config("store_passphrase") and current_user.has_ability("SCHEDULED_ORC"))
+	) }}
+{% endblock %}
+
+{% if get_config("store_passphrase") and current_user.has_ability("SCHEDULED_ORC") %}
+	{% block footer %}
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$("#schedule").change(function(){
+					if ($(this).is(":checked")) {
+						$("#hours,#minutes,#seconds").removeAttr("disabled");
+					} else {
+						$("#hours,#minutes,#seconds").attr("disabled","disabled");
+					}
+				})
+			});
+		</script>
+	{% endblock %}
+{% endif %}

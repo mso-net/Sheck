@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% set active_page_title = "Servers" %}
+{% set active_page = "servers" %}
+
+{% block subnav %}
+	<div class="col-xs-12">
+		{% if current_user.has_ability("ADD_SERVER") %}
+			<a href="/server/add" class="btn btn-default pull-right"><i class="fa fa-plus-circle fa-lg"></i> Add server</a>
+		{% endif %}
+	</div>
+{% endblock subnav %}
+
+{% block body %}
+	<div class="col-xs-12">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Alias</th>
+					<th>IP</th>
+					<th>Port</th>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for server in servers %}
+					<tr>
+						<td>{{server.alias}}</td>
+						<td>{{server.ip}}</td>
+						<td>{{server.port}}</td>
+						<td>
+							<div class="text-right">
+								{% if current_user.has_ability("REQUEST_SERVER_ACCESS") and (server.usercount>0 and server.accesscount<(server.usercount-server.requestcount)) %}
+									<a class="btn btn-default" href="/server/{{server.id}}/request" role="button"><i class="fa fa-question"></i> Request Access </a>
+								{% endif %}
+								{% if current_user.has_ability("GRANT_SERVER_ACCESS") and server.requestcount>0 %}
+									<a class="btn btn-default" href="/server/{{server.id}}/grant" role="button"><i class="fa fa-check"></i> Grant Access</a>
+								{% endif %}
+								{% if current_user.has_ability(["ADD_USER","DELETE_USER"]) %}
+									<a class="btn btn-default" href="/server/{{server.id}}/users" role="button"><i class="fa fa-male"></i> Users</a>
+								{% endif %}
+								{% if current_user.has_ability("DELETE_SERVER") %}
+									<a class="btn btn-default" href="/server/{{server.id}}/delete" role="button"><i class="fa fa-trash-o"></i> Delete</a>
+								{% endif %}
+								{% if current_user.has_ability("EDIT_SERVER") %}
+									<a class="btn btn-default" href="/server/{{server.id}}/edit" role="button"><i class="fa fa-pencil"></i> Edit</a>
+								{% endif %}
+							</div>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}

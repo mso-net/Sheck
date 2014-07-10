@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% set active_page_title = "Keys » Add" %}
+{% set active_page = "keys" %}
+
+{% block body %}
+	{{ render_form(form, action_url="/key/add", action_text='Submit Form') }}
+{% endblock %}

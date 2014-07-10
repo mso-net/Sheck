@@ -1,0 +1,257 @@
+{% from "macros.html" import render_field,render_checkbox_field,render_radio_field,render_form %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Sheck</title>
+		{% assets "css" %}
+		    <link rel="stylesheet" href="{{ ASSET_URL }}" />
+		{% endassets %}
+		<!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+					<a href="/" class="navbar-brand">Sheck</a>
+				</div>
+				<div class="navbar-collapse">
+					{% if current_user.is_authenticated() %}
+						{% set navigation_bar = [
+						    ("/servers", "servers", "Servers",["ADD_SERVER","DELETE_SERVER","ADD_USER","DELETE_USER","REQUEST_SERVER_ACCESS","GRANT_SERVER_ACCESS"],""),
+						    ("/people", "people", "People",["ADD_PERSON","DELETE_PERSON","ASSIGN_KEY_TO_PERSON","ASSIGN_ACCESS_TO_PERSON","EDIT_PERSON_ABILITIES"],""),
+						    ("/keys", "keys", "Keys",["ADD_KEY"],""),
+						    ("/generate","generate","Generate",["GENERATE_PREVIEW"],""),
+						    ("/orc","orc","ORC",["ADD_ORC","DELETE_ORC","EXECUTE_ORC","VIEW_ORC_RESULTS"],""),
+						    ("#","rescan","Rescan",["RESCAN"],"ajax_action(\"/rescan\");")
+						] -%}
+					{% else %}
+						{% if is_installed() %}
+							{% set navigation_bar = [
+							    ("/login", "login", "Login", [],"")
+							] -%}
+						{% else %}
+							{% set navigation_bar = [
+								("/install", "install", "Install", [],""),
+								("/docs", "docs", "Documentation", [],"")
+							] -%}
+						{% endif %}
+					{% endif %}
+					{% set active_page_title = active_page_title|default("") %}
+					{% set active_page_split = active_page.split(".") %}
+					{% set active_page = active_page_split[0]|default("dashboard") -%}
+					{% if active_page_split|length > 1 %}
+						{% set active_subpage = active_page_split[1] %}
+					{% else %}
+						{% set active_subpage = None %}
+					{% endif %}
+
+					<ul class="nav navbar-nav">
+						{% for href,id,caption,ability,onclick in navigation_bar %}
+							{% if ability|length == 0 or current_user.has_ability(ability) %}
+								<li{% if id == active_page %} class="active"{% endif %}><a href="{{ href|e }}" onclick="{{ onclick|e }}">{{ caption|e }}</a></li>
+							{% endif %}
+						{% endfor %}
+					</ul>
+					{% if current_user.is_authenticated() %}
+						<ul class="nav navbar-nav navbar-right">
+							<li{% if active_page == "settings" %} class="active"{% endif %}><a href="/settings"><i class="fa fa-gear"></i></a></li>
+							<li><a href="/logout">Logout</a></li>
+						</ul>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+		<div class="container">
+			<div class="row">
+				{% with messages = get_flashed_messages(with_categories=true) %}
+					{% if messages %}
+						<div class="col-xs-12">
+							{% for category,message in messages %}
+								<div class="alert alert-{{category}} alert-dismissable">
+									<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+									{{message}}
+								</div>
+							{% endfor %}
+						</div>
+					{% endif %}
+				{% endwith %}
+			</div>
+
+			{% if active_page_title != "" %}
+				<div class="row">
+					<h2>
+						{{active_page_title}}
+					</h2>
+				</div>
+			{% endif %}
+
+			<div class="row">
+				{% block subnav %}{% endblock %}
+			</div>
+
+			<div class="row">
+				{% block body %}{% endblock %}
+			</div>
+		</div>
+
+		{% if current_user.is_authenticated() and current_user.has_ability("LOGS") %}
+			<div class="navbar navbar-default navbar-fixed-bottom">
+				<div class="container">
+					<div class="row">
+						<div class="col-xs-12" style="background:#ae3910; color:#fff; position:relative;">
+							<h4>Log</h4>
+							<div style="position:absolute; top:39px; left:15px; width:925px; z-index:10; height:15px; background: linear-gradient(to bottom, rgba(174, 57, 16, 1) 0%, rgba(174, 57, 16, 0) 100%);"></div>
+
+							<div style="display:table; width:100%;color:#ddd; position:relative;">
+								<div style="height:120px; display:table-cell; vertical-align:bottom;">
+									<div style="max-height:120px; overflow-y:auto; overflow-x:hidden;" id="log-container">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}
+
+		<div class="modal fade" id="pom" tabindex="-1" role="dialog" aria-labelledby="pom_label" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form data-async id="pom_form" action="/pom" method="POST">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h4 class="modal-title" id="pom_label">Authenticate</h4>
+						</div>
+						<div class="modal-body">
+							{% if not get_config("store_passphrase") %}
+								<div class="form-group">
+									<label for="passphrase">Management Key Passphrase</label>
+									<input type="password" class="form-control" name="passphrase" id="passphrase">
+								</div>
+							{% endif %}
+							{% if get_config("use_otp") %}
+								<div class="form-group">
+									<label for="otp">One Time Pass</label>
+									<input type="text" class="form-control" name="otp" id="otp">
+								</div>
+							{% endif %}
+							<div id="pom_errors"></div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+							<button type="submit" class="btn btn-primary">Submit</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		{% assets "js" %}
+		    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+		{% endassets %}
+		<script type="text/javascript">
+			var log_ts = 0;
+			var log_timer = null;
+
+			$(document).ready(function(){
+				$("form[data-async]").on("submit",function(event){
+					var $form = $(this);
+					if (!$form.data("fullsubmit")) {
+						$.ajax({
+							dataType:"json",
+							type: $form.attr("method"),
+							url: $form.attr("action"),
+							data: $form.serialize(),
+							success: function(data, status) {
+								if (data.result=="ok") {
+									$form.find("input.pom_passed").remove();
+									$form.closest(".modal").modal("hide");
+									$form.find("input[type=text], input[type=password]").val("");
+								} else if (data.result=="redirect") {
+									top.location=data.location;
+								}
+							},
+							error: function(data, status) {
+								$form.find("input[type=text], input[type=password]").val("");
+								$("#pom_errors").append("<div class=\"alert alert-danger\">Invalid Credentials</div>");
+							}
+						});
+						$("#pom_errors").empty();
+						event.preventDefault();
+					}
+				});
+				$("select[multiple]").multiSelect({selectableOptgroup: true});
+				$(".line").peity("line",{width:"auto",fill:"rgb(204,66,18)",stroke:"rgb(191,62,1)"});
+				$("form").parsley({
+					successClass: "has-success",
+					errorClass: "has-error",
+					classHandler: function(el) {
+						return el.$element.closest(".form-group");
+					},
+					errorsWrapper: "<span class='help-block'></span>",
+					errorTemplate: "<span></span>"
+				});
+				{% if current_user.is_authenticated() and current_user.has_ability("LOGS") %}
+					$("#log-container").scrollTop($("#log-container").prop("scrollHeight"));
+					$("abbr.timeago").timeago();
+					log_timer = setInterval(fetchLogs,1000);
+					fetchLogs();
+				{% endif %}
+			});
+
+			{% if current_user.is_authenticated() and current_user.has_ability("LOGS") %}
+				$(window).on("beforeunload", function() {
+					clearTimeout(log_timer);
+				});
+
+				function fetchLogs(){
+					$.getJSON("/log/"+(log_ts),function(log_data){
+						$.each(log_data,function(i,data){
+							if (data.ts>=log_ts) {
+								log_ts=data.ts;
+								addLogEntry(data.t,data.d);
+							}
+						});
+						if (log_data.length>0) log_ts++;
+					});
+				}
+
+				function addLogEntry(timestamp,data){
+					if (timestamp=="") timestamp = new Date().toISOString();
+					$("#log-container").append("<h5>&nbsp;<abbr class=\"timeago\" style=\"color:#fff\" title=\""+timestamp+"\"></abbr> "+data+"</h5>");
+					$("#log-container").scrollTop($("#log-container").prop("scrollHeight"));
+					$("abbr.timeago").timeago();
+				}
+			{% endif %}
+
+			function ajax_action(url,data){
+				$.getJSON(url,data,function(response){
+					if (response.result=="pom") {
+						prompt_passphrase_otp(url,data,false);
+					}
+				});
+			}
+
+			function prompt_passphrase_otp(url,data,fullsubmit){
+				if (typeof data != "undefined") {
+					$.each(data,function(i,data_item) {
+						$("#pom #pom_form").append($("<input type=\"hidden\" class=\"pom_passed\" name=\""+i+"\" value=\""+data_item+"\">"));
+					});
+				}
+				if (typeof fullsubmit == "undefined")
+					fullsubmit = false;
+				$("#pom #pom_form").data("fullsubmit",fullsubmit);
+				$("#pom #pom_form").attr("action",url);
+				$("#pom").modal("show");
+			}
+		</script>
+		{% block footer %}{% endblock %}
+	</body>
+</html>

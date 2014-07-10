@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% if server_id is defined %}
+	{% set active_page_title = "Servers » Edit" %}
+{% else %}
+	{% set active_page_title = "Servers » Add" %}
+{% endif %}
+{% set active_page = "servers" %}
+
+{% block body %}
+	{{ render_form(form, action_url="/server/%s/edit"%server_id if server_id is defined else "/server/add", action_text='Submit Form') }}
+{% endblock %}

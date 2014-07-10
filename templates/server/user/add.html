@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% if user is defined %}
+	{% set active_page_title = "Servers » Users » Edit" %}
+{% else %}
+	{% set active_page_title = "Servers » Users » Add" %}
+{% endif %}
+{% set active_page = "servers" %}
+
+{% block body %}
+	{{ render_form(form, action_url="/server/%s/user/add"%server_id if user is not defined else "/server/%s/user/%s/edit"%(server_id,user.id), action_text='Submit Form') }}
+{% endblock %}

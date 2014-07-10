@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% set active_page_title = "People » Access" %}
+{% set active_page = "people" %}
+
+{% block body %}
+				<div class="col-xs-12">
+					{% if server_data.count() > 0 %}
+						<form role="form" action="/person/{{person_id}}/access" method="POST">
+							<div class="panel-group" id="accordion">
+								{% set previous_server = 0 %}
+								{% for server in server_data %}
+									{% if server.id != previous_server %}
+										{%if previous_server != 0 %}
+											</select></div></div></div>
+										{% endif %}
+										<div class="panel panel-default">
+											<div class="panel-heading">
+												<h4 class="panel-title">
+													<a data-toggle="collapse" data-parent="#accordion" href="#server_{{server.id}}">
+														{{server.alias}}
+													</a>
+												</h4>
+											</div>
+											<div id="server_{{server.id}}" class="panel-collapse collapse{% if previous_server == 0 %} in{% endif %}">
+												<div class="panel-body">
+													<select multiple="multiple" class="multi-select form-control" name="server[{{server.id}}]">
+									{% endif %}
+									{% set person_in_user = [False] %}
+									{% for person in server.user.people %}
+										{{person_id}};
+										{% if person.person.id == person_id %}
+											{% set _ = person_in_user.append(not person_in_user.pop()) %}
+										{% endif %}
+									{% endfor %}
+
+									<option value="{{server.user.id}}"{%if person_in_user[0] %}selected{% endif %}>{{server.user.user}}</option>
+									{% set previous_server = server.id %}
+								{% endfor %}
+													</select>
+												</div>
+											</div>
+										</div>
+							</div>
+							<br/>
+							<button type="submit" class="btn btn-default">Submit</button>
+						</form>
+					{% else %}
+						<center><h2>No servers or users available</h2></center>
+					{% endif %}
+				</div>
+{% endblock %}
+
+

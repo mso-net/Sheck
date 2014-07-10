@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% set active_page_title = "Install" %}
+{% set active_page = "install" %}
+
+
+{% block body %}
+	<div class="col-xs-12">
+		<form enctype="multipart/form-data" method="POST">
+			<div class="form-group">
+				<label for="alias">Alias</label>
+				<input type="text" class="form-control" name="alias" id="alias">
+			</div>
+			<div class="form-group">
+				<label for="email">Email Address</label>
+				<input type="text" class="form-control" name="email" id="email">
+			</div>
+			<div class="form-group">
+				<label for="key">Management Key</label>
+				<input type="file" id="key" name="key">
+			</div>
+			<div class="form-group">
+				<label for="key_passphrase">Passphrase</label>
+				<input type="password" class="form-control" id="key_passphrase" name="key_passphrase">
+			</div>
+			<div class="form-group">
+				<label for="store_passphrase">
+					<input type="checkbox" id="store_passphrase" name="store_passphrase">
+					Store Passphrase<br/>
+					<small>
+						This will store the Passphrase of your above Management Key, and enable features such as Scheduled ORCs
+					</small>
+				</label>
+			</div>
+			<div class="form-group">
+				<label for="use_otp">
+					<input type="checkbox" id="use_otp" name="use_otp">
+					Use OTP Authentication<br/>
+					<small>
+						If enabled, users will be required to authenticate with their OTP in order to perform certain 'management' level actions
+					</small>
+				</label>
+			</div>
+			<button type="submit" class="btn btn-default">Submit</button>
+		</form>
+	</div>
+{% endblock %}

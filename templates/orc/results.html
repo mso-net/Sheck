@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% set active_page_title = "ORC » Results" %}
+{% set active_page = "orc" %}
+
+{% block body %}
+	<div class="col-xs-12">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Server</th>
+					<th>User</th>
+					<th width="50%">Result</th>
+					<th width="10%">&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for server in orc_results.servers %}
+					{% for user in server.users %}
+						<tr>
+							<td>{{server.alias}}</td>
+							<td>{{user.user}}</td>
+							{% if orc_results.display_type == "text" %}
+								<td colspan="2">
+									<pre>{{user.result}}</pre>
+								</td>
+							{% else %}
+								<td>
+									<div class="line-container">
+										<div class="line">{{user.result}}</div>
+									</div>
+								</td>
+								<td>
+									<div class="line-indicator"></div>
+								</td>
+							{% endif %}
+						</tr>
+					{% endfor %}
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}
+
+{% block footer %}
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$(".peity").mousemove(function(event){
+				var parentPadding={left:parseInt($(this).parent().css("paddingLeft")),top:parseInt($(this).parent().css("paddingTop"))};
+				var parentOffset=$(this).parent().offset();
+				var elemWidth=$(this).width();
+				var graphValues = $(this).prev("div.line").text().split(",");
+				var widthPercentage=Math.ceil(((event.pageX-parentOffset.left-parentPadding.left)/elemWidth)*graphValues.length);
+				var curValue = graphValues[widthPercentage-1];
+				$(this).parent().parent().parent().find("div.line-indicator").html(curValue);
+			});
+
+			$(".peity").mouseout(function(event){
+				$(this).parent().parent().parent().find("div.line-indicator").html($(this).prev("div.line").text().split(",").pop());
+			});
+
+			$(".peity").each(function(i,elem){
+				$(this).parent().parent().parent().find("div.line-indicator").html($(this).prev("div.line").text().split(",").pop());
+			});
+		});
+	</script>
+{% endblock %}

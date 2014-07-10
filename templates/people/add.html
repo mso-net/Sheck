@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% if person is defined %}
+	{% set active_page_title = "People » Edit" %}
+{% else %}
+	{% set active_page_title = "People » Add" %}
+{% endif %}
+{% set active_page = "people" %}
+
+{% block body %}
+	<div class="col-xs-12">
+		{% if person is defined %}
+			<form role="form" action="/person/{{person.id}}/edit" method="POST">
+		{% else %}
+			<form role="form" action="/person/add" method="POST">
+		{% endif %}
+			<div class="form-group">
+				<label for="alias">Alias</label>
+				<input type="text" class="form-control" name="alias" id="alias" placeholder="Joe Bloggs"{% if person is defined %} value="{{person.alias}}"{% endif %}{% if not current_user.has_ability("EDIT_PERSON") %} disabled="disabled"{% endif %}>
+			</div>
+			<div class="form-group">
+				<label for="email">Email Address</label>
+				<input type="text" class="form-control" name="email" id="email" placeholder="joe.bloggs@example.com"{% if person is defined %} value="{{person.email}}"{% endif %}{% if not current_user.has_ability("EDIT_PERSON") %} disabled="disabled"{% endif %}>
+			</div>
+			
+			<div class="form-group">
+				<label for="abilities">Abilities</label>
+				<select multiple="multiple" class="multi-select form-control" name="abilities"{% if not current_user.has_ability("EDIT_PERSON_ABILITIES") %} disabled="disabled"{% endif %}>
+					{% for ability_category in ability_categories %}
+						<optgroup label="{{ability_category.alias}}">
+							{% set ability_alias_list = ability_category.alias_list.split(",") %}
+							{% set ability_key_list = ability_category.key_list.split(",") %}
+
+							{% for ability_index in range(ability_alias_list|length) %}
+								<option value="{{ability_key_list[ability_index]}}"{% if person_abilities is defined %}{% if ability_key_list[ability_index] in person_abilities %} selected{% endif %}{% endif %}>{{ability_alias_list[ability_index]}}</option>
+
+							{% endfor %}
+						</optgroup>
+					{% endfor %}
+				</select>
+			</div>
+			<button type="submit" class="btn btn-default">Submit</button>
+		</form>
+	</div>
+{% endblock %}

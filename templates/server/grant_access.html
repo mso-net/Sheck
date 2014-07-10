@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% set active_page_title = "Servers » Grant Access" %}
+{% set active_page = "servers" %}
+
+{% block body %}
+	<div class="col-xs-12">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Person</th>
+					<th>Server</th>
+					<th>User</th>
+					<th>&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for access_request in access_requests %}
+					<tr>
+						<td>{{access_request.person.alias}}</td>
+						<td>{{access_request.user.server.alias}}</td>
+						<td>{{access_request.user.user}}</td>
+						<td>
+							<div class="text-right">
+								<form role="form" class="pull-right" action="/server/{{server_id}}/deny" method="POST">
+									<input type="hidden" name="request" value="{{access_request.id}}"/>
+									<button type="submit" class="btn btn-default"><i class="fa fa-times"></i> Deny</button>
+								</form>
+								<span class="pull-right">&nbsp;&nbsp;</span>
+								<form role="form" class="pull-right" action="/server/{{server_id}}/grant" method="POST">
+									<input type="hidden" name="request" value="{{access_request.id}}"/>
+									<button type="submit" class="btn btn-default"><i class="fa fa-check"></i> Grant</button>
+								</form>
+							</div>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}

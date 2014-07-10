@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% set active_page_title = "Generate" %}
+{% set active_page = "generate" %}
+
+{% block body %}
+				<div class="col-xs-12">
+					{% if data_count == 0 %}
+						<center><h2>No data to output</h2></center>
+					{% else %}
+						{% for server in key_data %}
+							<h2>{{server.alias}}</h2>
+							{% for user in server.users %}
+								<h3>{{user.user}}</h3>
+								<pre>
+									# Geneated {{cur_datetime}}
+									<br/><br/># Sheck management key<br/>
+									{{sheck_public}}
+									{% if user["keys"]|length > 0 %}<br/><br/>
+										# Generated keys{% for key in user["keys"] %}<br/>
+										# {{key.person}}<br/>
+										{% if key.prefix != "" %}{{key.prefix}} {% endif %}{{key.algo}} {{key.blob}} {{key.person}}<br/>{% endfor %}{% endif %} </pre>
+							{% endfor %}
+						{% endfor %}
+						
+					{% endif %}
+				</div>
+				{% if current_user.has_ability("GENERATE_WRITE") %}
+					<div class="col-xs-12">
+						<h2>Commit Changes</h2>
+					</div>
+					<div class="col-xs-10">
+						<p>A word of warning - committing these changes will <b>OVERWRITE</b> the Authorized Key file on all of the above servers and users, with the above content.</p>
+					</div>
+					<div class="col-xs-2">
+						<form action="/generate_write" method="POST">
+							<div class="pull-right">
+								<button type="submit" class="btn btn-default">I understand, commit!</button>
+							</div>
+						</form>
+					</div>
+				{% endif %}
+{% endblock %}
