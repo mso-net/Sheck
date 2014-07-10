@@ -1,2 +1,2 @@
-apt-get -y install python2.7 python-dev python-pip build-essential
+apt-get -y install python2.7 python-dev python-pip build-essential libmysqlclient-dev libpq-dev
 pip install paramiko flask htmlmin flask-mail pyotp qrcode Image flask-peewee flask-login tornado apscheduler MySQL-python psycopg2 flask-assets jsmin cssmin
