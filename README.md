@@ -38,7 +38,7 @@ This time when we view the results for the ORC, the text returned from the comma
 #### Warning:
 ORCs are an extremely powerful, and subsequently dangerous tool. The method for executing these commands is simply an SSH session, authorized with the *Management Key* and stored *Management Key Passphrase*. This is by no means an ideal situation, due to the fact if the database is compromised, so are all your servers. While we encourage you to play with ORCs, we also urge you to be very careful, as commands WILL be executed, regardless of their content.
 
-In the future, we could improve upon the ORC feature by implementing something likes an agent which is furnished with specific abilities, or simply specifying a limited set of commands (to monitor common metrics) that is made available to the user when creating an ORC. Until then, be careful.
+In the future, we could improve upon the ORC feature by implementing something like an agent which is furnished with specific abilities, or by specifying a limited set of commands (to monitor common metrics) that are made available to the user when creating an ORC. Until then, be careful.
 
 Installation
 --------------
