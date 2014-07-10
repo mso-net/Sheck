@@ -30,7 +30,7 @@ In order to install Sheck on a linux server, you must have the following package
 Additional packages may be required by the Python packages that are installed by the below script - simply install any dependencies that *pip* states are missing.
 
 ```
-git clone https://github.com/JamesHookerMSO/Sheck.git
+git clone https://github.com/mso-net/Sheck.git
 cd Sheck
 chmod +x install_deps.sh
 ./install_deps.sh
@@ -59,7 +59,7 @@ While Sheck CAN be deployed via Heroku, we recommend that you're very cautious w
 On to the good stuff..Heroku makes it VERY easy to deploy applications with a few simple commands.
 
 ```
-git clone https://github.com/JamesHookerMSO/Sheck.git
+git clone https://github.com/mso-net/Sheck.git
 cd Sheck
 heroku create
 heroku addons:add cleardb
