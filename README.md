@@ -1,18 +1,45 @@
 Sheck
 =====
 
+### Key Management
+
 Sheck is an easy to use SSH Key and Server Management Tool, which aims to make the life of the sys-admin easier when it comes to performing SSH Key audits.
 
 Using Sheck, you are able to manage Public Keys on any number of Linux servers from a simple, intuitive interface. The following is a basic work-flow using Sheck.
 
 - A *Management Key* is defined upon setup of Sheck
-- A *Server* has *Users* associated with it (i.e. root, administrator, webmaster).
+- A *Server* has *Users* associated with it (i.e. root, administrator, webmaster)
 - *Users* have an *Authorized Keys* path, to which *Keys* are read, and written
-- *People* are your staff members, and are defined by an *Email Address* / *Password* pair.
+- *People* are your staff members, and are defined by an *Email Address* / *Password* pair
 - *Public Keys* can be added, and assigned to specific *People*
 - *People* can be granted access to specific *Users*
 - *Authorized Key* files are generated and written to the appropriate locations, utilizing SFTP connections, authorized by the *Management Key* added during setup of Sheck
-    
+- *Public Keys* may be imported from current *Servers* and their *Users*. These will be checked for uniqueness using their *Public Key Fingerprint*
+
+### ORCs
+ORCs (or One-line Returning Commands..catchy, huh?) enable you to run commands on servers én-masse, and inspect the output. ORCs can be made to treat the returning data as a block of text, or it can be treated as a numeric for historical purposes. ORCs can also be scheduled to run at specific intervals (for this, the *Management Key Passphrase* must be stored).
+
+One example would be an ORC to check the current 1 minute average load for servers.
+
+```
+uptime|awk '{print $(NF-2)}'|grep -v average|sed -r 's/,//g'
+```
+
+The above command returns the 1 minute load average. If the Display Type of *historical* is chosen when adding the ORC, the values returned will be stored against a time stamp, and rendered in a line graph when viewing the ORC results.
+
+Another example would be keeping an eye on free disk space. For this example, the ORC will be added with a Display Type of *text*
+
+```
+df -h
+```
+
+This time when we view the results for the ORC, the text returned from the command is displayed against each *Server* and *User*.
+
+#### Warning:
+ORCs are an extremely powerful, and subsequently dangerous tool. The method for executing these commands is simply an SSH session, authorized with the *Management Key* and stored *Management Key Passphrase*. This is by no means an ideal situation, due to the fact if the database is compromised, so are all your servers. While we encourage you to play with ORCs, we also urge you to be very careful, as commands WILL be executed, regardless of their content.
+
+In the future, we could improve upon the ORC feature by implementing something likes an agent which is furnished with specific abilities, or simply specifying a limited set of commands (to monitor common metrics) that is made available to the user when creating an ORC. Until then, be careful.
+
 Installation
 --------------
 
