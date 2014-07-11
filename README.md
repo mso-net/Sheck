@@ -135,6 +135,7 @@ Sheck uses a number of open source projects to work properly:
 * [peewee] - A small, expressive orm -- supports postgresql, mysql and sqlite
 * [pyotp] - Python One Time Password library
 api and more
+* [tornado] - A Python web framework and asynchronous networking library
 * [wtforms] - A flexible forms validation and rendering library for Python
 
 License
@@ -160,3 +161,4 @@ GPLv3
 [parsleyjs]:http://parsleyjs.org/
 [bootstrap-ubuntu]:http://bootswatch.com/
 [apscheduler]:https://pythonhosted.org/APScheduler/
+[tornado]:https://github.com/tornadoweb/tornado/
