@@ -1155,7 +1155,7 @@ def settings():
 			flash("Password Updated","success")
 		else:
 			flash("Incorrect Credentials","danger")
-			return full_minify(render_template("settings.html!"))
+			return full_minify(render_template("settings.html"))
 
 	if "key" in request.files:
 		key_content = request.files["key"].stream.read()
