@@ -10,9 +10,6 @@
 								{% set previous_server = 0 %}
 								{% for server in server_data %}
 									{% if server.id != previous_server %}
-										{%if previous_server != 0 %}
-											</select></div></div></div>
-										{% endif %}
 										<div class="panel panel-default">
 											<div class="panel-heading">
 												<h4 class="panel-title">
@@ -24,22 +21,23 @@
 											<div id="server_{{server.id}}" class="panel-collapse collapse{% if previous_server == 0 %} in{% endif %}">
 												<div class="panel-body">
 													<select multiple="multiple" class="multi-select form-control" name="server[{{server.id}}]">
-									{% endif %}
-									{% set person_in_user = [False] %}
-									{% for person in server.user.people %}
-										{{person_id}};
-										{% if person.person.id == person_id %}
-											{% set _ = person_in_user.append(not person_in_user.pop()) %}
-										{% endif %}
-									{% endfor %}
-
-									<option value="{{server.user.id}}"{%if person_in_user[0] %}selected{% endif %}>{{server.user.user}}</option>
-									{% set previous_server = server.id %}
-								{% endfor %}
-													</select>
+										{% for user in server.users %}
+											{% set person_in_user = [False] %}
+											{% for person in user.people %}
+												{% if person.person.id == person_id %}
+													{% set _ = person_in_user.append(not person_in_user.pop()) %}
+												{% endif %}
+											{% endfor %}
+	
+											<option value="{{user.id}}"{% if person_in_user[0] %}selected{% endif %}>{{user.user}}</option>
+										{% endfor %}
+														</select>
+													</div>
 												</div>
 											</div>
-										</div>
+											{% set previous_server = server.id %}
+									{% endif %}
+								{% endfor %}
 							</div>
 							<br/>
 							<button type="submit" class="btn btn-default">Submit</button>
